@@ -14,13 +14,13 @@ button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;paddin
 </style></head><body>
 <main>
 <h1>MEMBERS GATE</h1>
-<video id="fold" controls autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4" aria-label="Original screen note folding"></video>
-<p><a class="go" href="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4">Open the fold</a></p>
+<video id="fold" controls autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791131412.0e7dd2fb400cf9ba/wOAufYyPhgP0/q7bbx.mp4" aria-label="Original origami bill folding into a crane"></video>
+<p><a class="go" href="https://tmpfiles.org/dl/1791131412.0e7dd2fb400cf9ba/wOAufYyPhgP0/q7bbx.mp4">Open the original fold</a></p>
 <p>Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
 <form id="up"><label>Records file, JSON or CSV <input id="file" type="file" accept=".json,.csv,application/json,text/csv"></label>
 <p><button type="submit">Sort</button> <button type="button" id="sample">Use the closed case</button></p></form>
 <p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
-<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note is a screen, not currency.</p>
+<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note is a screen, not currency. The open link is the crane file.</p>
 </main>
 <script>
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
