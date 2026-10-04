@@ -16,26 +16,31 @@ video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16p
 </style></head><body>
 <main>
 <p><a class="back" href="index.html">Back</a></p>
-<h1 id="title">NO RESULT</h1>
-<p id="why">Sort a file first. The result stays in this browser.</p>
-<table id="lanes" hidden><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody></tbody></table>
+<h1 id="title" class="no">REFUSE</h1>
+<p id="why">Refused at C. Totals are both 3. The spare on B did not cross.</p>
+<table id="lanes"><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody>
+<tr><td>A</td><td>1</td><td>1</td><td>0</td><td>fit</td></tr>
+<tr><td>B</td><td>0</td><td>1</td><td>1</td><td>spare stays</td></tr>
+<tr><td>C</td><td>1</td><td>0</td><td>-1</td><td>short</td></tr>
+<tr><td>D</td><td>1</td><td>1</td><td>0</td><td>fit</td></tr>
+</tbody></table>
 <p><button type="button" id="save">Download</button></p>
-<p>A spare does not cover a miss. Not a grant.</p>
+<p>A spare does not cover a miss. Not a grant. Not a price.</p>
 </main>
 <div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
-function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
+function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior,l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
+const closed={admitted:false,failing:[{label:"C",reason:"short"}],lanes:[{label:"A",claimed:1,interior:1,headroom:0,reason:"fit"},{label:"B",claimed:0,interior:1,headroom:1,reason:"spare stays"},{label:"C",claimed:1,interior:0,headroom:-1,reason:"short"},{label:"D",claimed:1,interior:1,headroom:0,reason:"fit"}]};
+let decision=closed;
 const raw=sessionStorage.getItem('membersGateResult');
-let decision=null;
 if(raw){
   decision=JSON.parse(raw);
   document.getElementById('title').textContent=decision.admitted?'ADMIT':'REFUSE';
   document.getElementById('title').className=decision.admitted?'yes':'no';
   const fail=decision.failing.map(l=>l.label+' '+l.reason).join(', ');
   document.getElementById('why').textContent=decision.admitted?'Every label fits.':'Refused at '+fail+'. A surplus did not cross.';
-  const tb=document.querySelector('#lanes tbody');
+  const tb=document.querySelector('#lanes tbody'); tb.innerHTML='';
   decision.lanes.forEach(l=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+l.label+'</td><td>'+l.claimed+'</td><td>'+(l.interior==null?'none':l.interior)+'</td><td>'+(l.headroom==null?'none':l.headroom)+'</td><td>'+l.reason+'</td>'; tb.appendChild(tr);});
-  document.getElementById('lanes').hidden=false;
 }
-document.getElementById('save').onclick=()=>{if(!decision) return; const blob=new Blob([csvOf(decision)],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='members-gate-result.csv'; a.click();};
+document.getElementById('save').onclick=()=>{const blob=new Blob([csvOf(decision)],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='members-gate-result.csv'; a.click();};
 </script></body></html>
