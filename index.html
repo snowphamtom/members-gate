@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
-body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif}
-#veil{position:fixed;inset:0;z-index:5;background:#0c0610;display:none;align-items:center;justify-content:center}
-#veil.on{display:flex}
-.card{width:min(460px,90vw);aspect-ratio:1.7/1;border-radius:22px;position:relative;overflow:hidden;background:#1a0c18;box-shadow:0 0 90px #5a2048}
-.mist{position:absolute;inset:-30%;background:radial-gradient(circle at 28% 40%,rgba(255,214,170,.85),transparent 42%),radial-gradient(circle at 70% 62%,rgba(120,40,90,.7),transparent 46%);filter:blur(10px);animation:drift 8s ease-in-out infinite}
-.note{position:absolute;inset:10%;border-radius:14px;background:linear-gradient(165deg,#1e4d34,#0d281c);color:#e4f0dc;display:flex;align-items:center;justify-content:center;font-size:72px;clip-path:inset(0 100% 0 0);animation:reveal 6s ease forwards}
-.note span{position:absolute;bottom:14px;font-size:11px;letter-spacing:.28em}
-@keyframes drift{50%{transform:translate3d(12px,-8px,0) scale(1.05)}}
-@keyframes reveal{to{clip-path:inset(0 0 0 0)}}
-main{max-width:720px;margin:0 auto;padding:48px 20px 64px}
+body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif;padding-bottom:180px}
+main{max-width:720px;margin:0 auto;padding:48px 20px 32px}
 h1{letter-spacing:.16em;color:#ffd45a;font-weight:500;font-size:28px}
 label,p{line-height:1.5}
 input[type=file]{display:block;margin:12px 0}
 button,a.go{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;padding:10px 16px;font-weight:700;text-decoration:none;display:inline-block}
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#c8b48a}
+#fold{position:fixed;left:0;right:0;bottom:0;height:160px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;perspective:800px}
+.sheet{width:220px;height:96px;position:relative;transform-style:preserve-3d;background:linear-gradient(165deg,#1e4d34,#0d281c);color:#e4f0dc;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;animation:folds 12s ease-in-out infinite}
+.sheet span{position:absolute;bottom:6px;font-size:10px;letter-spacing:.22em}
+@keyframes folds{
+0%{transform:rotateX(0) rotateY(0) scale(1)}
+20%{transform:rotateX(62deg) rotateY(-18deg) scaleX(.7)}
+40%{transform:rotateX(8deg) rotateY(70deg) scaleY(.55) translateY(-20px)}
+60%{transform:rotateX(48deg) rotateZ(-24deg) scale(.8)}
+80%{transform:rotateY(180deg) rotateX(20deg) scaleX(.6)}
+100%{transform:rotateX(0) rotateY(0) scale(1)}
+}
 </style></head><body>
-<div id="veil"><div class="card"><div class="mist"></div><div class="note">100<span>SCREEN</span></div></div></div>
 <main>
 <h1>MEMBERS GATE</h1>
 <p>Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
@@ -29,6 +31,7 @@ button,a.go{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;paddin
 <p id="next"><a class="go" href="results.html">Open the result</a></p>
 <p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note is a screen, not currency.</p>
 </main>
+<div id="fold" aria-hidden="true"><div class="sheet">100<span>SCREEN</span></div></div>
 <script>
 function decide(claimed, interior){
   const lanes=[]; let admitted=true;
@@ -55,16 +58,14 @@ function fromText(name, text){
 function run(claimed, interior){
   const decision=decide(claimed, interior);
   sessionStorage.setItem('membersGateResult', JSON.stringify(decision));
-  document.getElementById('veil').classList.add('on');
   document.getElementById('next').style.display='none';
-  setTimeout(()=>{document.getElementById('veil').classList.remove('on'); document.getElementById('next').style.display='block';}, 6500);
+  setTimeout(()=>{document.getElementById('next').style.display='block';}, 1600);
 }
 document.getElementById('up').onsubmit=async (e)=>{
   e.preventDefault();
   const file=document.getElementById('file').files[0];
   if(!file) return;
-  const parsed=fromText(file.name.toLowerCase(), await file.text());
-  run(parsed.claimed, parsed.interior);
+  run(fromText(file.name.toLowerCase(), await file.text()).claimed, fromText(file.name.toLowerCase(), await file.text()).interior);
 };
 document.getElementById('sample').onclick=()=>run({A:1,B:0,C:1,D:1},{A:1,B:1,C:0,D:1});
 </script></body></html>
