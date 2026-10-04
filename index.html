@@ -5,28 +5,43 @@ html,body{margin:0;min-height:100%;color:#efe6d6;font-family:Georgia,serif;backg
 main{max-width:680px;margin:0 auto;padding:28px 22px 48px}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 6px}
 .lead{margin:0 0 14px;color:#d9d0c2}
-.stage{padding:14px;background:linear-gradient(#2a241c,#17140f);border-radius:18px}
-video{width:100%;height:260px;object-fit:cover;display:block;background:#07080c;border-radius:12px}
-.rail{display:flex;justify-content:space-between;margin:10px 2px 0;font-size:12px;letter-spacing:.14em;color:#b7ab9c}
-.rail b{color:#f3ead8;font-weight:500}
-a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block}
-.foot{font-size:13px;color:#b7ab9c}
+button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;font:inherit}
+textarea{width:100%;box-sizing:border-box;min-height:120px;background:#1c1914;color:#efe6d6;border:1px solid #3a342c;border-radius:12px;padding:12px;font:14px/1.4 ui-monospace,monospace}
+table{width:100%;border-collapse:collapse;margin:14px 0}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #3a342c}
+.no{color:#e7b3a2}.yes{color:#d7e2c4}.foot{font-size:13px;color:#b7ab9c}
 </style></head><body><main>
 <h1>MEMBERS GATE</h1>
-<p class="lead">The sheet folds.</p>
-<div class="stage"><video id="fold" autoplay muted loop playsinline controls preload="auto" src="https://tmpfiles.org/dl/1791132589.e8de825986bcdf27/wMA3f6tmUCGl/fold.mp4" aria-label="Twelve second origami bill fold"></video>
-<div class="rail"><span id="phase">SHEET</span><b id="clock">0.0 / 12.2</b></div></div>
-<p><a class="go" href="https://tmpfiles.org/dl/1791132589.e8de825986bcdf27/wMA3f6tmUCGl/fold.mp4">Open the fold</a></p>
-<p class="foot">Taylor Heller, Monsters Ink LLC. A screen, not a print plate. Not a grant.</p>
+<p class="lead">Each kind is checked alone. A spare does not cover a missing kind.</p>
+<p><button id="run" type="button">Run the closed case</button></p>
+<textarea id="rows" spellcheck="false">A,1,1
+B,0,1
+C,1,0
+D,1,1</textarea>
+<div id="out"></div>
+<p class="foot">A screen, not a print plate. Not a grant. No price is printed.</p>
 </main>
 <script>
-const fold=document.getElementById('fold');
-const phase=document.getElementById('phase');
-const clock=document.getElementById('clock');
-const names=['SHEET','CREASE','WING','CRANE'];
-function startFold(){fold.muted=true; const p=fold.play(); if(p) p.catch(()=>{});}
-fold.addEventListener('loadeddata', startFold);
-fold.addEventListener('canplay', startFold);
-startFold();
-fold.addEventListener('timeupdate', ()=>{const d=fold.duration||12.17; const i=Math.min(3,Math.floor(fold.currentTime/(d/4))); phase.textContent=names[i]; clock.textContent=fold.currentTime.toFixed(1)+' / '+d.toFixed(1);});
+const rows=document.getElementById('rows');
+const out=document.getElementById('out');
+function check(text){
+  const parsed=[];
+  for(const line of text.split(/\n+/)){
+    const bits=line.split(',').map(s=>s.trim()).filter(Boolean);
+    if(!bits.length) continue;
+    if(bits.length!==3) throw new Error('each row needs label, claimed, interior');
+    const claimed=Number(bits[1]), interior=Number(bits[2]);
+    if(!Number.isInteger(claimed)||!Number.isInteger(interior)) throw new Error('counts must be whole numbers');
+    parsed.push({label:bits[0], claimed, interior, headroom:interior-claimed});
+  }
+  if(!parsed.length) throw new Error('no rows');
+  const short=parsed.filter(r=>r.headroom<0);
+  const claimedSum=parsed.reduce((n,r)=>n+r.claimed,0);
+  const interiorSum=parsed.reduce((n,r)=>n+r.interior,0);
+  const decision=short.length? 'REFUSE' : 'ADMIT';
+  const body=parsed.map(r=>`<tr><td>${r.label}</td><td>${r.claimed}</td><td>${r.interior}</td><td>${r.headroom}</td><td>${r.headroom<0?'short':'fit'}</td></tr>`).join('');
+  out.innerHTML=`<p class="${short.length?'no':'yes'}"><b>${decision}</b>${short.length? ' at '+short.map(r=>r.label).join(', '):''}. Totals ${claimedSum} claimed, ${interiorSum} on hand. The total is not the check.</p><table><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+document.getElementById('run').addEventListener('click',()=>{try{check(rows.value)}catch(e){out.textContent=e.message}});
+check(rows.value);
 </script></body></html>
