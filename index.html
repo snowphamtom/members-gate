@@ -7,7 +7,7 @@ main{max-width:680px;margin:0 auto;padding:42px 22px 20px}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
 p,label{line-height:1.55;color:#d9d0c2}
 input[type=file]{display:block;margin:12px 0;color:#d9d0c2}
-button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer}
+button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#b7ab9c}
 .fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
@@ -19,14 +19,17 @@ video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16p
 <p>Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
 <form id="up"><label>Records file, JSON or CSV <input id="file" type="file" accept=".json,.csv,application/json,text/csv"></label>
 <p><button type="submit">Sort</button> <button type="button" id="sample">Use the closed case</button></p></form>
-<p id="next"><a class="go" href="results.html">Open the result</a></p>
+<p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
 <p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
 </main>
 <div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}
+function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
+function download(){const raw=sessionStorage.getItem("membersGateResult"); if(!raw) return; const blob=new Blob([csvOf(JSON.parse(raw))],{type:"text/csv"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="members-gate-result.csv"; a.click();}
 function run(claimed, interior){sessionStorage.setItem("membersGateResult", JSON.stringify(decide(claimed, interior))); document.getElementById("next").style.display="none"; setTimeout(()=>{document.getElementById("next").style.display="block";}, 1600);}
 document.getElementById("up").onsubmit=async (e)=>{e.preventDefault(); const file=document.getElementById("file").files[0]; if(!file) return; const parsed=fromText(file.name.toLowerCase(), await file.text()); run(parsed.claimed, parsed.interior);};
 document.getElementById("sample").onclick=()=>run({A:1,B:0,C:1,D:1},{A:1,B:1,C:0,D:1});
+document.getElementById("save").onclick=download;
 </script></body></html>

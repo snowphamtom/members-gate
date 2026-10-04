@@ -1,47 +1,41 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate result</title>
 <style>
-body{margin:0;min-height:100vh;color:#efe6d6;font-family:Georgia,serif;background:#07080c radial-gradient(36% 28% at 12% 8%, rgba(196,92,132,.28), transparent 62%), radial-gradient(30% 24% at 88% 18%, rgba(46,92,70,.22), transparent 60%), #07080c;padding-bottom:240px}
+html,body{margin:0;min-height:100%;background-color:#07080c;color:#efe6d6;font-family:Georgia,serif}
+body{background-image:radial-gradient(36% 28% at 12% 8%, rgba(196,92,132,.28), transparent 62%),radial-gradient(30% 24% at 88% 18%, rgba(46,92,70,.22), transparent 60%);padding-bottom:240px}
 main{max-width:680px;margin:0 auto;padding:42px 22px 20px}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8}
 table{width:100%;border-collapse:collapse;margin-top:16px}
 td,th{border-bottom:1px solid rgba(201,180,138,.28);text-align:left;padding:8px 4px;color:#efe6d6}
 .no{color:#e7b1a8}.yes{color:#d5e2cc}
-a{color:#c9b48a}
-button{background:#efe6d6;color:#14080c;border:0;border-radius:999px;padding:10px 16px;font-weight:700;margin-right:8px}
+a,button{color:#1a140e;background:#c9b48a;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
+a.back{background:transparent;color:#c9b48a;padding:0}
 .fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
 video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
 .mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
 </style></head><body>
 <main>
-<p><a href="index.html">Back</a></p>
+<p><a class="back" href="index.html">Back</a></p>
 <h1 id="title">NO RESULT</h1>
 <p id="why">Sort a file first. The result stays in this browser.</p>
 <table id="lanes" hidden><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody></tbody></table>
-<p><button type="button" id="save" hidden>Download result</button></p>
+<p><button type="button" id="save">Download</button></p>
 <p>A spare does not cover a miss. Not a grant.</p>
 </main>
 <div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
+function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
 const raw=sessionStorage.getItem('membersGateResult');
-const save=document.getElementById('save');
+let decision=null;
 if(raw){
-  const d=JSON.parse(raw);
-  document.getElementById('title').textContent=d.admitted?'ADMIT':'REFUSE';
-  document.getElementById('title').className=d.admitted?'yes':'no';
-  const fail=d.failing.map(l=>l.label+' '+l.reason).join(', ');
-  document.getElementById('why').textContent=d.admitted?'Every label fits.':'Refused at '+fail+'. A surplus did not cross.';
+  decision=JSON.parse(raw);
+  document.getElementById('title').textContent=decision.admitted?'ADMIT':'REFUSE';
+  document.getElementById('title').className=decision.admitted?'yes':'no';
+  const fail=decision.failing.map(l=>l.label+' '+l.reason).join(', ');
+  document.getElementById('why').textContent=decision.admitted?'Every label fits.':'Refused at '+fail+'. A surplus did not cross.';
   const tb=document.querySelector('#lanes tbody');
-  d.lanes.forEach(l=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+l.label+'</td><td>'+l.claimed+'</td><td>'+(l.interior==null?'none':l.interior)+'</td><td>'+(l.headroom==null?'none':l.headroom)+'</td><td>'+l.reason+'</td>'; tb.appendChild(tr);});
+  decision.lanes.forEach(l=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+l.label+'</td><td>'+l.claimed+'</td><td>'+(l.interior==null?'none':l.interior)+'</td><td>'+(l.headroom==null?'none':l.headroom)+'</td><td>'+l.reason+'</td>'; tb.appendChild(tr);});
   document.getElementById('lanes').hidden=false;
-  save.hidden=false;
-  save.onclick=()=>{
-    const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='members-gate-result.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  };
 }
+document.getElementById('save').onclick=()=>{if(!decision) return; const blob=new Blob([csvOf(decision)],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='members-gate-result.csv'; a.click();};
 </script></body></html>
