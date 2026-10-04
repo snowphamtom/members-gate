@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Members Gate</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
 body{margin:0;background:#1a100c;color:#f6ecd2;font-family:Georgia,serif}
-header{text-align:center;padding:24px 12px 4px}
-h1{margin:0;letter-spacing:.18em;color:#ffd45a;font-size:40px}
-.tag{font-style:italic}
+#veil{position:fixed;inset:0;z-index:5;background:#14080c;display:flex;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#veil.off{opacity:0;pointer-events:none}
+.card{width:min(420px,88vw);aspect-ratio:1.6/1;border-radius:18px;position:relative;overflow:hidden;background:#2a120c;box-shadow:0 0 80px #6a2030}
+.mist{position:absolute;inset:-20%;background:radial-gradient(circle at 30% 40%,#ffd7a8,transparent 40%),radial-gradient(circle at 70% 60%,#7a1d3a,transparent 46%),radial-gradient(circle at 50% 50%,#1a3a2a,transparent 50%);filter:blur(8px);animation:drift 8s ease-in-out infinite}
+.note{position:absolute;inset:8%;border-radius:12px;background:linear-gradient(160deg,#1d4a32,#0e2a1c 60%,#163828);color:#d7e7c8;display:flex;align-items:center;justify-content:center;font-size:64px;letter-spacing:.08em;clip-path:inset(0 100% 0 0);animation:reveal 7s ease forwards}
+.note small{position:absolute;bottom:12px;font-size:12px;letter-spacing:.2em}
+@keyframes drift{50%{transform:translate3d(12px,-8px,0) scale(1.05)}}
+@keyframes reveal{to{clip-path:inset(0 0 0 0)}}
+header{text-align:center;padding:24px 12px 4px}h1{margin:0;letter-spacing:.18em;color:#ffd45a;font-size:40px}
 .cabinet{max-width:980px;margin:16px auto 32px;display:grid;grid-template-columns:1fr 300px;gap:16px;padding:0 12px}
 .glass{background:#120c09;border:14px solid #6b3a1f;border-radius:18px;padding:10px}
 canvas{width:100%;background:#0e2a1c;border-radius:8px;display:block;touch-action:none}
 .side{background:#24160f;border:1px solid #8a5a32;border-radius:12px;padding:14px}
 button{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
 @media(max-width:800px){.cabinet{grid-template-columns:1fr}}
-</style></head>
-<body>
-<header><h1>MEMBERS GATE</h1><p class="tag">A job can total out and still be short. Play while you wait.</p></header>
+</style></head><body>
+<div id="veil"><div class="card"><div class="mist"></div><div class="note">100<small>SCREEN</small></div></div></div>
+<header><h1>MEMBERS GATE</h1><p>A job can total out and still be short. Play while you wait.</p></header>
 <div class="cabinet"><div class="glass"><canvas id="table" width="640" height="860"></canvas></div>
-<aside class="side"><h2>THE MISS</h2><p>Most clerks add the lanes and ship when the sum fits. An unused lane then pays for an empty one. The total is green. The job is not.</p><h2>THE RULE</h2><p>Each lane keeps its own name. A spare does not cover a miss.</p><h2>WHILE YOU WAIT</h2><p>Arrows flip. Space launches. Tap the lower corners on a phone.</p><p><button id="play" type="button">Play pinball</button></p><p id="hud">Score 0</p><p>Taylor Heller, Monsters Ink LLC. Not a grant. Price not set.</p></aside></div>
+<aside class="side"><h2>THE MISS</h2><p>Most clerks add the lanes and ship when the sum fits. An unused lane then pays for an empty one.</p><h2>THE RULE</h2><p>Each lane keeps its own name. A spare does not cover a miss.</p><p><button id="play" type="button">Play pinball</button></p><p id="hud">Score 0</p><p>Taylor Heller, Monsters Ink LLC. Not a grant. Not currency.</p></aside></div>
 <script>
+setTimeout(()=>document.getElementById('veil').classList.add('off'),7200);
 const canvas=document.getElementById('table'),ctx=canvas.getContext('2d'),hud=document.getElementById('hud');
 const W=canvas.width,H=canvas.height;let score=0,balln=1;const keys={};
 const ball={x:560,y:760,vx:0,vy:0,r:9,held:true};const flip={l:0,r:0};
@@ -37,8 +40,7 @@ if(flip.l>.4&&ball.y>700&&ball.x<300&&ball.y<760){ball.vy=-11;ball.vx-=1.5;score
 if(flip.r>.4&&ball.y>700&&ball.x>300&&ball.x<520&&ball.y<760){ball.vy=-11;ball.vx+=1.5;score+=10}
 if(ball.y>H-10&&ball.x<520)resetBall()}
 ctx.fillStyle='#123524';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#e7c27a';ctx.lineWidth=8;ctx.strokeRect(24,24,W-48,H-48);
-ctx.fillStyle='#ffd45a';ctx.font='20px Georgia';ctx.fillText('MEMBERS GATE',200,70);
-bumpers.forEach(b=>{ctx.beginPath();ctx.fillStyle=b.lane==='short'?'#c4472d':'#ffd45a';ctx.arc(b.x,b.y,b.r,0,6.28);ctx.fill();ctx.fillStyle='#1a100c';ctx.font='12px Georgia';ctx.fillText(b.lane,b.x-16,b.y+4)});
+bumpers.forEach(b=>{ctx.beginPath();ctx.fillStyle=b.lane==='short'?'#c4472d':'#ffd45a';ctx.arc(b.x,b.y,b.r,0,6.28);ctx.fill()});
 ctx.strokeStyle='#f6ecd2';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(120,760);ctx.lineTo(230,760-flip.l*50);ctx.stroke();
 ctx.beginPath();ctx.moveTo(470,760);ctx.lineTo(360,760-flip.r*50);ctx.stroke();
 ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,6.28);ctx.fill();
