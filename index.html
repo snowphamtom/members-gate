@@ -1,43 +1,32 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
-html,body{margin:0;min-height:100%;color:#efe6d6;font-family:Georgia,serif}
-body{background:#121418}
-.desk{min-height:100vh;background:radial-gradient(ellipse at 50% 0%,rgba(201,180,138,.16),transparent 46%),linear-gradient(rgba(7,8,12,.45),rgba(7,8,12,.72)),repeating-linear-gradient(90deg,#3a4048 0 2px,transparent 2px 92px),repeating-linear-gradient(#3a4048 0 2px,transparent 2px 54px)}
-main{max-width:680px;margin:0 auto;padding:28px 22px 48px}
-h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 6px}
-.lead{margin:0 0 14px;color:#d9d0c2}
-.stage{position:relative;padding:14px;background:linear-gradient(#2a241c,#17140f);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35),inset 0 0 0 1px rgba(201,180,138,.35)}
-video{width:100%;height:260px;object-fit:cover;display:block;background:#07080c;border-radius:12px}
-.tap{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);background:rgba(0,0,0,.55);color:#f3ead8;border:1px solid rgba(201,180,138,.7);border-radius:999px;padding:10px 16px;letter-spacing:.16em;font-size:13px;pointer-events:none}
+html,body{margin:0;min-height:100%;background-color:#07080c;color:#efe6d6;font-family:Georgia,serif}
+body{background-image:radial-gradient(36% 28% at 12% 8%, rgba(196,92,132,.28), transparent 62%),radial-gradient(30% 24% at 88% 18%, rgba(46,92,70,.22), transparent 60%);padding-bottom:240px}
+main{max-width:680px;margin:0 auto;padding:42px 22px 20px}
+h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
 p,label{line-height:1.55;color:#d9d0c2}
-input[type=file]{display:block;margin:12px 0}
-button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
+input[type=file]{display:block;margin:12px 0;color:#d9d0c2}
+button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer}
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#b7ab9c}
-</style></head><body><div class="desk"><main>
+.fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
+video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
+.mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
+</style></head><body>
+<main>
 <h1>MEMBERS GATE</h1>
-<p class="lead">Tap the screen. The sheet folds.</p>
-<div class="stage"><video id="fold" controls muted loop playsinline preload="auto" src="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4" aria-label="Bill folding"></video><span class="tap" id="tap">TAP TO FOLD</span></div>
-<p><a class="go" href="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4">Open the fold</a></p>
 <p>Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
 <form id="up"><label>Records file, JSON or CSV <input id="file" type="file" accept=".json,.csv,application/json,text/csv"></label>
 <p><button type="submit">Sort</button> <button type="button" id="sample">Use the closed case</button></p></form>
-<p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
-<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note is a screen, not currency.</p>
-</main></div>
+<p id="next"><a class="go" href="results.html">Open the result</a></p>
+<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
+</main>
+<div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
-const fold=document.getElementById("fold");
-const tap=document.getElementById("tap");
-function startFold(){fold.play().then(()=>{tap.style.display="none";}).catch(()=>{});}
-document.addEventListener("pointerdown", startFold, {once:true});
-fold.addEventListener("play", ()=>{tap.style.display="none";});
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}
-function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
-function download(){const raw=sessionStorage.getItem("membersGateResult"); if(!raw) return; const blob=new Blob([csvOf(JSON.parse(raw))],{type:"text/csv"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="members-gate-result.csv"; a.click();}
 function run(claimed, interior){sessionStorage.setItem("membersGateResult", JSON.stringify(decide(claimed, interior))); document.getElementById("next").style.display="none"; setTimeout(()=>{document.getElementById("next").style.display="block";}, 1600);}
 document.getElementById("up").onsubmit=async (e)=>{e.preventDefault(); const file=document.getElementById("file").files[0]; if(!file) return; const parsed=fromText(file.name.toLowerCase(), await file.text()); run(parsed.claimed, parsed.interior);};
 document.getElementById("sample").onclick=()=>run({A:1,B:0,C:1,D:1},{A:1,B:1,C:0,D:1});
-document.getElementById("save").onclick=download;
 </script></body></html>
