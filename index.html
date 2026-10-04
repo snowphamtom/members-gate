@@ -12,19 +12,59 @@ body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif}
 @keyframes reveal{to{clip-path:inset(0 0 0 0)}}
 main{max-width:640px;margin:0 auto;padding:48px 20px 64px}
 h1{margin:0;letter-spacing:.18em;color:#ffd45a;font-size:36px}
-.tag{font-style:italic}
-section{margin-top:28px}
-h2{margin:0 0 8px;letter-spacing:.12em;font-size:14px;color:#ffd45a}
-p{line-height:1.45}
+label,input,button{font:inherit}
+input[type=file]{display:block;margin:12px 0;color:#f6ecd2}
+button{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;padding:10px 16px}
+#link{display:none;margin-top:18px}
+#link a{color:#ffd45a}
+.err{color:#ff8d8d}
 </style></head><body>
 <div id="veil"><div class="card"><div class="mist"></div><div class="note">100<small>SCREEN</small></div></div></div>
 <main>
 <h1>MEMBERS GATE</h1>
-<p class="tag">A job can total out and still be short.</p>
-<section><h2>THE MISS</h2><p>Most clerks add the lanes and ship when the sum fits. An unused lane then pays for an empty one. The total is green. The job is not.</p></section>
-<section><h2>THE RULE</h2><p>Each lane keeps its own name. A spare does not cover a miss. A lane with no match is a refusal. The decision is a new record.</p></section>
-<section><h2>WHERE IT SITS</h2><p>In front of a dispatch queue, a power draw, a channel, or a slot. It does not replace those systems.</p></section>
-<p>Taylor Heller, Monsters Ink LLC. Not a grant. Not currency. Price not set.</p>
+<p>Upload the closed records. Sorting stays on this screen. The file is not sent to a server.</p>
+<form id="form">
+<label>CSV with columns label, claimed, interior<input id="file" type="file" accept=".csv,text/csv,text/plain" required></label>
+<button type="submit">Sort</button>
+</form>
+<p id="status"></p>
+<p id="link"><a id="next" href="results.html">Open the results</a></p>
+<p>A spare does not cover a miss. Taylor Heller, Monsters Ink LLC. Not a grant. Not currency.</p>
 </main>
-<script>setTimeout(()=>document.getElementById('veil').classList.add('off'),7200);</script>
-</body></html>
+<script>
+setTimeout(()=>document.getElementById('veil').classList.add('off'),7200);
+function parse(text){
+  const rows=text.trim().split(/\r?\n/).filter(Boolean);
+  const start=/label/i.test(rows[0])?1:0;
+  return rows.slice(start).map(line=>{
+    const [label,claimed,interior]=line.split(',').map(s=>s.trim());
+    return {label, claimed:Number(claimed), interior:Number(interior)};
+  }).filter(r=>r.label);
+}
+function score(rows){
+  const lanes=rows.map(r=>{
+    if(!Number.isFinite(r.claimed)||!Number.isFinite(r.interior)) return {label:r.label, claimed:r.claimed, interior:r.interior, headroom:null, result:'missing'};
+    const headroom=r.interior-r.claimed;
+    return {label:r.label, claimed:r.claimed, interior:r.interior, headroom, result:headroom<0?'refuse':'holds'};
+  });
+  const admitted=lanes.every(l=>l.result==='holds');
+  return {admitted, lanes, created:new Date().toISOString()};
+}
+document.getElementById('form').onsubmit=async (e)=>{
+  e.preventDefault();
+  const file=document.getElementById('file').files[0];
+  const status=document.getElementById('status');
+  const link=document.getElementById('link');
+  link.style.display='none';
+  if(!file){status.textContent='Choose a file.';return;}
+  status.textContent='Sorting.';
+  try{
+    const decision=score(parse(await file.text()));
+    sessionStorage.setItem('members-gate-decision', JSON.stringify(decision));
+    status.textContent=decision.admitted?'Sorting finished. Admitted.':'Sorting finished. Refused.';
+    link.style.display='block';
+  }catch(err){
+    status.innerHTML='<span class="err">The file could not be read. Use label, claimed, interior.</span>';
+  }
+};
+</script></body></html>
