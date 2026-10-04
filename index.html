@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
 html,body{margin:0;min-height:100%;color:#efe6d6;font-family:Georgia,serif}
-body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.55),rgba(7,8,12,.55)),repeating-linear-gradient(90deg,#3a4048 0 2px,transparent 2px 92px),repeating-linear-gradient(#3a4048 0 2px,transparent 2px 54px);padding-bottom:250px}
+body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.55),rgba(7,8,12,.55)),repeating-linear-gradient(90deg,#3a4048 0 2px,transparent 2px 92px),repeating-linear-gradient(#3a4048 0 2px,transparent 2px 54px);padding-bottom:280px}
 main{max-width:680px;margin:0 auto;padding:42px 22px 20px;background:rgba(7,8,12,.72);border:1px solid rgba(201,180,138,.28);position:relative;z-index:1}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
 p,label{line-height:1.55;color:#d9d0c2}
@@ -10,9 +10,10 @@ input[type=file]{display:block;margin:12px 0}
 button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#b7ab9c}
-.fold{position:fixed;left:0;right:0;bottom:0;height:230px;display:flex;align-items:flex-end;justify-content:center;z-index:20}
-video{width:min(560px,96vw);height:210px;object-fit:cover;border-radius:16px 16px 0 0;background:#07080c;box-shadow:0 0 0 2px rgba(201,180,138,.35),0 -12px 40px rgba(0,0,0,.7);position:relative;z-index:21}
-.mark{position:absolute;right:16px;bottom:12px;z-index:22;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
+.fold{position:fixed;left:0;right:0;bottom:0;height:250px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;z-index:20}
+video{width:min(560px,96vw);height:190px;object-fit:cover;border-radius:16px 16px 0 0;background:#07080c;box-shadow:0 0 0 2px rgba(201,180,138,.35),0 -12px 40px rgba(0,0,0,.7)}
+.mark{position:absolute;right:16px;bottom:36px;z-index:22;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
+a.clip{color:#c9b48a;font-size:13px;margin:6px 0 8px}
 </style></head><body>
 <main>
 <h1>MEMBERS GATE</h1>
@@ -22,7 +23,7 @@ video{width:min(560px,96vw);height:210px;object-fit:cover;border-radius:16px 16p
 <p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
 <p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
 </main>
-<div class="fold"><video id="fold" autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791130835.05b73fb97b057eb4/wfARfzyRRxYo/foldmove.mp4" aria-label="Bill folding into animals"></video><span class="mark" id="mark">CRANE</span></div>
+<div class="fold"><video id="fold" controls autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791130835.05b73fb97b057eb4/wfARfzyRRxYo/foldmove.mp4" aria-label="Bill folding into animals"></video><a class="clip" href="https://tmpfiles.org/dl/1791130835.05b73fb97b057eb4/wfARfzyRRxYo/foldmove.mp4">Open the fold</a><span class="mark" id="mark">CRANE</span></div>
 <script>
 const names=["CRANE","FOX","FROG","BUTTERFLY","ELEPHANT","SWAN","RABBIT","FISH","OWL","TURTLE","DRAGON","HORSE"];
 const fold=document.getElementById("fold");
