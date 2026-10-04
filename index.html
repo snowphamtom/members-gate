@@ -2,16 +2,16 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
 html,body{margin:0;min-height:100%;color:#efe6d6;font-family:Georgia,serif}
-body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.55),rgba(7,8,12,.55)),repeating-linear-gradient(90deg,#3a4048 0 2px,transparent 2px 92px),repeating-linear-gradient(#3a4048 0 2px,transparent 2px 54px);padding-bottom:250px}
+body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.62),rgba(7,8,12,.62)),url("https://tmpfiles.org/dl/1791129494.04f6b9bb8fe0b48e/wZAPfDydlHRJ/vault.jpg");background-size:auto,cover;background-position:center;background-attachment:fixed;padding-bottom:250px}
 main{max-width:680px;margin:0 auto;padding:42px 22px 20px;background:rgba(7,8,12,.72);border:1px solid rgba(201,180,138,.28);position:relative;z-index:1}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
 p,label{line-height:1.55;color:#d9d0c2}
-input[type=file]{display:block;margin:12px 0}
+input[type=file]{display:block;margin:12px 0;color:#d9d0c2}
 button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#b7ab9c}
 .fold{position:fixed;left:0;right:0;bottom:0;height:230px;display:flex;align-items:flex-end;justify-content:center;z-index:20}
-canvas{width:min(560px,96vw);height:210px;background:#121418;border-radius:16px 16px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.7)}
+video{width:min(560px,96vw);height:210px;object-fit:cover;border-radius:16px 16px 0 0;background:#07080c;box-shadow:0 0 0 2px rgba(201,180,138,.35),0 -12px 40px rgba(0,0,0,.7);position:relative;z-index:21}
 .mark{position:absolute;right:16px;bottom:12px;z-index:22;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
 </style></head><body>
 <main>
@@ -20,38 +20,15 @@ canvas{width:min(560px,96vw);height:210px;background:#121418;border-radius:16px 
 <form id="up"><label>Records file, JSON or CSV <input id="file" type="file" accept=".json,.csv,application/json,text/csv"></label>
 <p><button type="submit">Sort</button> <button type="button" id="sample">Use the closed case</button></p></form>
 <p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
-<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note is a screen, not currency.</p>
+<p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
 </main>
-<div class="fold"><canvas id="fold" width="560" height="210" aria-label="Folding screen note"></canvas><span class="mark" id="mark">CRANE</span></div>
+<div class="fold"><video id="fold" autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791130498.6d27aa556a904c2d/wUApfky41pJ3/foldmove.mp4" aria-label="Twelve bills folding into animals"></video><span class="mark" id="mark">CRANE</span></div>
 <script>
 const names=["CRANE","FOX","FROG","BUTTERFLY","ELEPHANT","SWAN","RABBIT","FISH","OWL","TURTLE","DRAGON","HORSE"];
-const tips=[[400,40],[360,36],[220,48],[140,30],[250,40],[390,36],[270,28],[450,70],[320,36],[150,48],[420,40],[390,50]];
-const c=document.getElementById("fold"), g=c.getContext("2d"), mark=document.getElementById("mark");
-let t=0;
-function frame(){
-  const step=2.2, n=names.length, u=t% (n*step), i=Math.floor(u/step), k=(u%step)/step;
-  const fold=Math.sin(k*Math.PI);
-  const tip=tips[i];
-  g.clearRect(0,0,560,210);
-  g.fillStyle="#121418"; g.fillRect(0,0,560,210);
-  g.save(); g.translate(280,120); g.rotate(fold*0.35*(i%2?1:-1));
-  g.fillStyle="#1e4d34";
-  g.beginPath();
-  g.moveTo(-150,40);
-  g.lineTo(-40,40-fold*30);
-  g.lineTo(0,-10-fold*70);
-  g.lineTo(tip[0]-280,-20-fold*(120-tip[1]));
-  g.lineTo(150,40);
-  g.lineTo(40,50);
-  g.closePath(); g.fill();
-  g.strokeStyle="rgba(244,239,228,.45)"; g.beginPath(); g.moveTo(0,-10); g.lineTo(0,40); g.stroke();
-  g.restore();
-  g.fillStyle="#e4f0dc"; g.font="16px Georgia"; g.fillText("100 SCREEN",16,28);
-  mark.textContent=names[i];
-  t+=0.03; requestAnimationFrame(frame);
-}
-frame();
-function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const v=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:v,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-v; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:v,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
+const fold=document.getElementById("fold");
+const mark=document.getElementById("mark");
+fold.addEventListener("timeupdate",()=>{const i=Math.min(11,Math.floor(fold.currentTime/3.25)); if(mark.textContent!==names[i]) mark.textContent=names[i];});
+function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}
 function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
 function download(){const raw=sessionStorage.getItem("membersGateResult"); if(!raw) return; const blob=new Blob([csvOf(JSON.parse(raw))],{type:"text/csv"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="members-gate-result.csv"; a.click();}
