@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate</title>
 <style>
-body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif;padding-bottom:230px}
-main{max-width:720px;margin:0 auto;padding:36px 20px 24px}
-h1{letter-spacing:.16em;color:#ffd45a;font-weight:500;font-size:28px}
-input[type=file]{display:block;margin:12px 0}
-button,a.go{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;padding:10px 16px;font-weight:700;text-decoration:none;display:inline-block}
+body{margin:0;min-height:100vh;color:#efe6d6;font-family:Georgia,serif;background:#07080c radial-gradient(36% 28% at 12% 8%, rgba(196,92,132,.28), transparent 62%), radial-gradient(30% 24% at 88% 18%, rgba(46,92,70,.22), transparent 60%), #07080c;padding-bottom:240px}
+main{max-width:680px;margin:0 auto;padding:42px 22px 20px}
+h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
+p,label{line-height:1.55;color:#d9d0c2}
+input[type=file]{display:block;margin:12px 0;color:#d9d0c2}
+button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer}
 #next{display:none;margin-top:18px}
-.foot{font-size:13px;color:#c8b48a}
-.fold{position:fixed;left:0;right:0;bottom:0;height:210px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#14080c 18%,transparent)}
-.fold video{width:min(560px,96vw);height:190px;object-fit:cover;border-radius:14px 14px 0 0;background:#07060a}
-.mark{position:absolute;right:14px;bottom:10px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
+.foot{font-size:13px;color:#b7ab9c}
+.fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
+video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
+.mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
 </style></head><body>
 <main>
 <h1>MEMBERS GATE</h1>
@@ -20,7 +21,7 @@ button,a.go{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;paddin
 <p id="next"><a class="go" href="results.html">Open the result</a></p>
 <p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
 </main>
-<div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
+<div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}

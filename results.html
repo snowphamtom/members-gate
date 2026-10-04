@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate result</title>
 <style>
-body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif}
-main{max-width:720px;margin:0 auto;padding:48px 20px 64px}
-h1{letter-spacing:.16em;color:#ffd45a;font-weight:500;font-size:28px}
+body{margin:0;min-height:100vh;color:#efe6d6;font-family:Georgia,serif;background:#07080c radial-gradient(36% 28% at 12% 8%, rgba(196,92,132,.28), transparent 62%), radial-gradient(30% 24% at 88% 18%, rgba(46,92,70,.22), transparent 60%), #07080c;padding-bottom:240px}
+main{max-width:680px;margin:0 auto;padding:42px 22px 20px}
+h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8}
 table{width:100%;border-collapse:collapse;margin-top:16px}
-td,th{border-bottom:1px solid #6a3a32;text-align:left;padding:8px 4px}
-.no{color:#ffb0a8}.yes{color:#d7e7c8}
-a{color:#ffd45a}
+td,th{border-bottom:1px solid rgba(201,180,138,.28);text-align:left;padding:8px 4px;color:#efe6d6}
+.no{color:#e7b1a8}.yes{color:#d5e2cc}
+a{color:#c9b48a}
+.fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
+video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
+.mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
 </style></head><body>
 <main>
 <p><a href="index.html">Back</a></p>
@@ -16,6 +19,7 @@ a{color:#ffd45a}
 <table id="lanes" hidden><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody></tbody></table>
 <p>A spare does not cover a miss. Not a grant.</p>
 </main>
+<div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
 const raw=sessionStorage.getItem('membersGateResult');
 if(raw){
