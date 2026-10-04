@@ -8,6 +8,7 @@ table{width:100%;border-collapse:collapse;margin-top:16px}
 td,th{border-bottom:1px solid rgba(201,180,138,.28);text-align:left;padding:8px 4px;color:#efe6d6}
 .no{color:#e7b1a8}.yes{color:#d5e2cc}
 a{color:#c9b48a}
+button{background:#efe6d6;color:#14080c;border:0;border-radius:999px;padding:10px 16px;font-weight:700;margin-right:8px}
 .fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
 video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
 .mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
@@ -17,11 +18,13 @@ video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16p
 <h1 id="title">NO RESULT</h1>
 <p id="why">Sort a file first. The result stays in this browser.</p>
 <table id="lanes" hidden><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody></tbody></table>
+<p><button type="button" id="save" hidden>Download result</button></p>
 <p>A spare does not cover a miss. Not a grant.</p>
 </main>
 <div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
 const raw=sessionStorage.getItem('membersGateResult');
+const save=document.getElementById('save');
 if(raw){
   const d=JSON.parse(raw);
   document.getElementById('title').textContent=d.admitted?'ADMIT':'REFUSE';
@@ -31,5 +34,14 @@ if(raw){
   const tb=document.querySelector('#lanes tbody');
   d.lanes.forEach(l=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+l.label+'</td><td>'+l.claimed+'</td><td>'+(l.interior==null?'none':l.interior)+'</td><td>'+(l.headroom==null?'none':l.headroom)+'</td><td>'+l.reason+'</td>'; tb.appendChild(tr);});
   document.getElementById('lanes').hidden=false;
+  save.hidden=false;
+  save.onclick=()=>{
+    const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='members-gate-result.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
 }
 </script></body></html>
