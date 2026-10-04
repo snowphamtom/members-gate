@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Members Gate</title>
+<style>
+body{margin:0;background:#1a100c;color:#f6ecd2;font-family:Georgia,serif}
+header{text-align:center;padding:24px 12px 4px}
+h1{margin:0;letter-spacing:.18em;color:#ffd45a;font-size:40px}
+.tag{font-style:italic}
+.cabinet{max-width:980px;margin:16px auto 32px;display:grid;grid-template-columns:1fr 300px;gap:16px;padding:0 12px}
+.glass{background:#120c09;border:14px solid #6b3a1f;border-radius:18px;padding:10px}
+canvas{width:100%;background:#0e2a1c;border-radius:8px;display:block;touch-action:none}
+.side{background:#24160f;border:1px solid #8a5a32;border-radius:12px;padding:14px}
+button{background:#ffd45a;color:#1a100c;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
+@media(max-width:800px){.cabinet{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><h1>MEMBERS GATE</h1><p class="tag">A job can total out and still be short. Play while you wait.</p></header>
+<div class="cabinet"><div class="glass"><canvas id="table" width="640" height="860"></canvas></div>
+<aside class="side"><h2>THE MISS</h2><p>Most clerks add the lanes and ship when the sum fits. An unused lane then pays for an empty one. The total is green. The job is not.</p><h2>THE RULE</h2><p>Each lane keeps its own name. A spare does not cover a miss.</p><h2>WHILE YOU WAIT</h2><p>Arrows flip. Space launches. Tap the lower corners on a phone.</p><p><button id="play" type="button">Play pinball</button></p><p id="hud">Score 0</p><p>Taylor Heller, Monsters Ink LLC. Not a grant. Price not set.</p></aside></div>
+<script>
+const canvas=document.getElementById('table'),ctx=canvas.getContext('2d'),hud=document.getElementById('hud');
+const W=canvas.width,H=canvas.height;let score=0,balln=1;const keys={};
+const ball={x:560,y:760,vx:0,vy:0,r:9,held:true};const flip={l:0,r:0};
+const bumpers=[{x:180,y:250,r:28,lane:'spare'},{x:320,y:210,r:28,lane:'fit'},{x:450,y:280,r:28,lane:'short'}];
+function launch(){ball.x=560;ball.y=760;ball.vx=-1.2;ball.vy=-13;ball.held=false}
+function resetBall(){balln++;ball.held=true;ball.vx=0;ball.vy=0;ball.x=560;ball.y=760;if(balln>3){balln=1;score=0}}
+function step(){
+if(keys.ArrowLeft)flip.l=Math.min(1,flip.l+.25);else flip.l=Math.max(0,flip.l-.2);
+if(keys.ArrowRight)flip.r=Math.min(1,flip.r+.25);else flip.r=Math.max(0,flip.r-.2);
+if(!ball.held){ball.vy+=.18;ball.x+=ball.vx;ball.y+=ball.vy;
+if(ball.x<40){ball.x=40;ball.vx*=-.9}if(ball.x>W-40){ball.x=W-40;ball.vx*=-.9}if(ball.y<50){ball.y=50;ball.vy*=-.85}
+bumpers.forEach(b=>{const dx=ball.x-b.x,dy=ball.y-b.y,d=Math.hypot(dx,dy);if(d<b.r+ball.r){const n=d||1;ball.vx=dx/n*6.5;ball.vy=dy/n*6.5-1;if(b.lane!=='short')score+=100}});
+if(flip.l>.4&&ball.y>700&&ball.x<300&&ball.y<760){ball.vy=-11;ball.vx-=1.5;score+=10}
+if(flip.r>.4&&ball.y>700&&ball.x>300&&ball.x<520&&ball.y<760){ball.vy=-11;ball.vx+=1.5;score+=10}
+if(ball.y>H-10&&ball.x<520)resetBall()}
+ctx.fillStyle='#123524';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#e7c27a';ctx.lineWidth=8;ctx.strokeRect(24,24,W-48,H-48);
+ctx.fillStyle='#ffd45a';ctx.font='20px Georgia';ctx.fillText('MEMBERS GATE',200,70);
+bumpers.forEach(b=>{ctx.beginPath();ctx.fillStyle=b.lane==='short'?'#c4472d':'#ffd45a';ctx.arc(b.x,b.y,b.r,0,6.28);ctx.fill();ctx.fillStyle='#1a100c';ctx.font='12px Georgia';ctx.fillText(b.lane,b.x-16,b.y+4)});
+ctx.strokeStyle='#f6ecd2';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(120,760);ctx.lineTo(230,760-flip.l*50);ctx.stroke();
+ctx.beginPath();ctx.moveTo(470,760);ctx.lineTo(360,760-flip.r*50);ctx.stroke();
+ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,6.28);ctx.fill();
+hud.textContent='Score '+score+' · Ball '+balln+(ball.held?' · press space':'');
+requestAnimationFrame(step)}
+document.getElementById('play').onclick=launch;
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '){e.preventDefault();launch()}});
+addEventListener('keyup',e=>{keys[e.key]=false});
+canvas.addEventListener('pointerdown',e=>{const r=canvas.getBoundingClientRect();if((e.clientX-r.left)/r.width<.5)keys.ArrowLeft=true;else keys.ArrowRight=true;launch()});
+canvas.addEventListener('pointerup',()=>{keys.ArrowLeft=false;keys.ArrowRight=false});
+step();
+</script></body></html>
