@@ -6,7 +6,9 @@ body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.55),
 main{max-width:680px;margin:0 auto;padding:28px 22px 40px;background:rgba(7,8,12,.72);border:1px solid rgba(201,180,138,.28)}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8;margin:0 0 12px}
 p,label{line-height:1.55;color:#d9d0c2}
-video{width:100%;height:260px;object-fit:cover;display:block;background:#07080c;border-radius:14px;box-shadow:0 0 0 2px rgba(201,180,138,.35);margin:0 0 14px}
+.stage{position:relative;margin:0 0 14px}
+video{width:100%;height:260px;object-fit:cover;display:block;background:#07080c;border-radius:14px;box-shadow:0 0 0 2px rgba(201,180,138,.35)}
+.tap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.55);color:#f3ead8;border:1px solid rgba(201,180,138,.6);border-radius:999px;padding:10px 16px;letter-spacing:.16em;font-size:13px;pointer-events:none}
 input[type=file]{display:block;margin:12px 0}
 button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
 #next{display:none;margin-top:18px}
@@ -14,10 +16,9 @@ button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;paddin
 </style></head><body>
 <main>
 <h1>MEMBERS GATE</h1>
-<p id="tap">Tap the screen to start the fold.</p>
-<video id="fold" controls muted loop playsinline src="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4" aria-label="Screen note folding"></video>
-<p><a class="go" href="https://tmpfiles.org/dl/1791129642.9fd058de6978b28d/wdAvfhy9KagH/fold-front.mp4">Open the fold</a></p>
-<p>Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
+<div class="stage"><video id="fold" controls muted loop playsinline preload="auto" src="https://tmpfiles.org/dl/1791131412.0e7dd2fb400cf9ba/wOAufYyPhgP0/q7bbx.mp4" aria-label="Original origami bill folding into a crane"></video><span class="tap" id="tap">TAP TO START</span></div>
+<p><a class="go" href="https://tmpfiles.org/dl/1791131412.0e7dd2fb400cf9ba/wOAufYyPhgP0/q7bbx.mp4">Open the original fold</a></p>
+<p>Touch or click the screen. The crane fold starts. Upload the closed records. Claimed and interior, by label. When the sort finishes, the result link appears.</p>
 <form id="up"><label>Records file, JSON or CSV <input id="file" type="file" accept=".json,.csv,application/json,text/csv"></label>
 <p><button type="submit">Sort</button> <button type="button" id="sample">Use the closed case</button></p></form>
 <p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
@@ -26,9 +27,9 @@ button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;paddin
 <script>
 const fold=document.getElementById("fold");
 const tap=document.getElementById("tap");
-function startFold(){fold.play().then(()=>{tap.textContent="Fold started.";}).catch(()=>{tap.textContent="The file did not start. Use Open the fold.";});}
-document.body.addEventListener("click",startFold);
-document.body.addEventListener("touchend",startFold);
+function startFold(){fold.play().then(()=>{tap.style.display="none";}).catch(()=>{});}
+document.addEventListener("pointerdown", startFold, {once:true});
+fold.addEventListener("play", ()=>{tap.style.display="none";});
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}
 function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
