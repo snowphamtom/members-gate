@@ -11,12 +11,8 @@ button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;paddin
 #next{display:none;margin-top:18px}
 .foot{font-size:13px;color:#b7ab9c}
 .fold{position:fixed;left:0;right:0;bottom:0;height:230px;display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.screen{width:min(560px,96vw);height:210px;border-radius:16px 16px 0 0;background:radial-gradient(80% 70% at 50% 80%,#1c2430,#07080c);box-shadow:0 0 0 2px rgba(201,180,138,.35),0 -12px 40px rgba(0,0,0,.7);position:relative;z-index:21;overflow:hidden}
-.screen svg{width:100%;height:100%;display:block}
-.paper{fill:#f4efe4;stroke:#c45c84;stroke-width:1.4;transition:d .7s ease}
-.crease{fill:none;stroke:rgba(90,70,60,.45);stroke-width:1}
+video{width:min(560px,96vw);height:210px;object-fit:cover;border-radius:16px 16px 0 0;background:#07080c;box-shadow:0 0 0 2px rgba(201,180,138,.35),0 -12px 40px rgba(0,0,0,.7);position:relative;z-index:21}
 .mark{position:absolute;right:16px;bottom:12px;z-index:22;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
-.name{position:absolute;left:16px;bottom:12px;z-index:22;font-size:12px;letter-spacing:.18em}
 </style></head><body>
 <main>
 <h1>MEMBERS GATE</h1>
@@ -26,43 +22,12 @@ button,a.go{background:#c9b48a;color:#1a140e;border:0;border-radius:999px;paddin
 <p id="next"><a class="go" href="results.html">Open the result</a> <button type="button" id="save">Download</button></p>
 <p class="foot">Taylor Heller, Monsters Ink LLC. The file stays in this browser. Not a grant. The note at the bottom is a screen, not currency.</p>
 </main>
-<div class="fold"><div class="screen" aria-label="Twelve origami animals">
-<svg viewBox="0 0 560 210" id="stage"><polygon id="sheet" class="paper" points=""></polygon><polyline id="fold" class="crease" points=""></polyline></svg>
-<span class="name" id="who">CRANE</span><span class="mark">SCREEN</span></div></div>
+<div class="fold"><video id="fold" autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791130108.0369e13728410fe6/woAYfIyQtcMJ/twelve.mp4" aria-label="Twelve origami animals"></video><span class="mark" id="mark">CRANE</span></div>
 <script>
-const animals=[
- ["CRANE","250,150 310,150 400,70 330,40 280,90 230,40 160,70"],
- ["FROG","180,150 380,150 400,110 340,70 280,100 220,70 160,110"],
- ["FOX","170,150 390,150 360,90 310,60 280,95 250,55 200,90"],
- ["BUTTERFLY","280,110 180,40 140,80 230,120 140,160 190,175 280,130 370,175 420,160 330,120 420,80 380,40"],
- ["ELEPHANT","150,150 410,150 400,90 340,70 300,100 250,60 200,95 160,70"],
- ["SWAN","160,150 300,150 340,90 390,50 330,70 280,40 250,90"],
- ["RABBIT","190,155 370,155 350,100 320,40 290,90 270,35 240,90 210,45"],
- ["FISH","150,105 250,60 360,70 450,105 360,145 250,150"],
- ["DOG","160,150 400,150 380,95 340,70 300,100 250,55 210,95 180,60"],
- ["OWL","190,155 370,155 390,80 320,40 280,75 240,40 170,80"],
- ["TURTLE","170,140 390,140 410,100 300,60 150,100 220,45 280,40 340,50"],
- ["DRAGON","150,140 250,150 300,90 360,40 330,100 420,70 380,130 300,145"]
-];
-const creases=[
- "280,90 280,150",
- "280,100 280,150",
- "280,95 280,150",
- "280,110 280,175",
- "250,60 280,150",
- "280,40 300,150",
- "270,35 280,155",
- "250,60 360,145",
- "250,55 280,150",
- "280,75 280,155",
- "300,60 280,140",
- "300,90 300,145"
-];
-let i=0;
-const sheet=document.getElementById("sheet"), fold=document.getElementById("fold"), who=document.getElementById("who");
-function show(n){sheet.setAttribute("points",animals[n][1]); fold.setAttribute("points",creases[n]); who.textContent=animals[n][0]+" "+(n+1)+"/12";}
-show(0);
-setInterval(()=>{i=(i+1)%12; show(i);}, 1400);
+const names=["CRANE","FOX","FROG","BUTTERFLY","ELEPHANT","SWAN","RABBIT","FISH","OWL","TURTLE","DRAGON","HORSE"];
+const fold=document.getElementById("fold");
+const mark=document.getElementById("mark");
+fold.addEventListener("timeupdate",()=>{const i=Math.min(11,Math.floor(fold.currentTime/2)); if(mark.textContent!==names[i]) mark.textContent=names[i];});
 function decide(claimed, interior){const lanes=[]; let admitted=true; Object.keys(claimed).forEach(label=>{const c=Number(claimed[label]); if(!(label in interior)){lanes.push({label,claimed:c,interior:null,headroom:null,reason:"missing"}); admitted=false; return;} const n=Number(interior[label]); const h=n-c; const reason=h<0?"deficit":"fit"; if(reason!=="fit") admitted=false; lanes.push({label,claimed:c,interior:n,headroom:h,reason});}); if(!lanes.length) admitted=false; return {admitted,lanes,failing:lanes.filter(l=>l.reason!=="fit")};}
 function fromText(name, text){if(name.endsWith(".csv")||text.trim().charAt(0)!=="{"){const rows=text.trim().split(/\r?\n/).slice(1); const claimed={}, interior={}; rows.forEach(row=>{const [label,c,n]=row.split(",").map(s=>s.trim()); if(!label) return; claimed[label]=Number(c); interior[label]=Number(n);}); return {claimed, interior};} const data=JSON.parse(text); return {claimed:data.claimed, interior:data.interior};}
 function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior==null?"":l.interior,l.headroom==null?"":l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
