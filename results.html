@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate result</title>
+<style>
+body{margin:0;background:#14080c;color:#f6ecd2;font-family:Georgia,serif}
+main{max-width:720px;margin:0 auto;padding:48px 20px 64px}
+h1{letter-spacing:.16em;color:#ffd45a;font-weight:500;font-size:28px}
+table{width:100%;border-collapse:collapse;margin-top:16px}
+td,th{border-bottom:1px solid #6a3a32;text-align:left;padding:8px 4px}
+.no{color:#ffb0a8}.yes{color:#d7e7c8}
+a{color:#ffd45a}
+</style></head><body>
+<main>
+<p><a href="index.html">Back</a></p>
+<h1 id="title">NO RESULT</h1>
+<p id="why">Sort a file first. The result stays in this browser.</p>
+<table id="lanes" hidden><thead><tr><th>Label</th><th>Claimed</th><th>Interior</th><th>Headroom</th><th>Call</th></tr></thead><tbody></tbody></table>
+<p>A spare does not cover a miss. Not a grant.</p>
+</main>
+<script>
+const raw=sessionStorage.getItem('membersGateResult');
+if(raw){
+  const d=JSON.parse(raw);
+  document.getElementById('title').textContent=d.admitted?'ADMIT':'REFUSE';
+  document.getElementById('title').className=d.admitted?'yes':'no';
+  const fail=d.failing.map(l=>l.label+' '+l.reason).join(', ');
+  document.getElementById('why').textContent=d.admitted?'Every label fits.':'Refused at '+fail+'. A surplus did not cross.';
+  const tb=document.querySelector('#lanes tbody');
+  d.lanes.forEach(l=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+l.label+'</td><td>'+l.claimed+'</td><td>'+(l.interior==null?'none':l.interior)+'</td><td>'+(l.headroom==null?'none':l.headroom)+'</td><td>'+l.reason+'</td>'; tb.appendChild(tr);});
+  document.getElementById('lanes').hidden=false;
+}
+</script></body></html>
