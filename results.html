@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Members Gate result</title>
 <style>
 html,body{margin:0;min-height:100%;color:#efe6d6;font-family:Georgia,serif}
-body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.62),rgba(7,8,12,.62)),url("https://tmpfiles.org/dl/1791129494.04f6b9bb8fe0b48e/wZAPfDydlHRJ/vault.jpg");background-size:auto,cover;background-position:center;background-attachment:fixed;padding-bottom:240px}
+body{background-color:#121418;background-image:linear-gradient(rgba(7,8,12,.62),rgba(7,8,12,.62));background-attachment:fixed}
 main{max-width:680px;margin:0 auto;padding:42px 22px 20px;background:rgba(7,8,12,.72);border:1px solid rgba(201,180,138,.28)}
 h1{letter-spacing:.22em;font-weight:500;font-size:28px;color:#f3ead8}
 table{width:100%;border-collapse:collapse;margin-top:16px}
@@ -10,9 +10,6 @@ td,th{border-bottom:1px solid rgba(201,180,138,.28);text-align:left;padding:8px 
 .no{color:#e7b1a8}.yes{color:#d5e2cc}
 a,button{color:#1a140e;background:#c9b48a;border:0;border-radius:999px;padding:11px 16px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer;margin:0 6px 8px 0}
 a.back{background:transparent;color:#c9b48a;padding:0}
-.fold{position:fixed;left:0;right:0;bottom:0;height:220px;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(to top,#07080c 22%,transparent)}
-video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(196,92,132,.22)}
-.mark{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.22em;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px}
 </style></head><body>
 <main>
 <p><a class="back" href="index.html">Back</a></p>
@@ -27,7 +24,6 @@ video{width:min(560px,96vw);height:196px;object-fit:cover;border-radius:16px 16p
 <p><button type="button" id="save">Download</button></p>
 <p>A spare does not cover a miss. Not a grant. Not a price.</p>
 </main>
-<div class="fold"><video autoplay muted loop playsinline src="https://tmpfiles.org/dl/1791129108.f675a5ea6fc39440/wGAwft738ClR/fold-small.mp4" aria-label="Screen note folding"></video><span class="mark">SCREEN</span></div>
 <script>
 function csvOf(d){const lines=["label,claimed,interior,headroom,call"]; d.lanes.forEach(l=>lines.push([l.label,l.claimed,l.interior,l.headroom,l.reason].join(","))); lines.push("decision,"+(d.admitted?"admit":"refuse")); return lines.join("\n")+"\n";}
 const closed={admitted:false,failing:[{label:"C",reason:"short"}],lanes:[{label:"A",claimed:1,interior:1,headroom:0,reason:"fit"},{label:"B",claimed:0,interior:1,headroom:1,reason:"spare stays"},{label:"C",claimed:1,interior:0,headroom:-1,reason:"short"},{label:"D",claimed:1,interior:1,headroom:0,reason:"fit"}]};
